@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using CommonObjects;
 
 namespace ClientLibrary
@@ -14,10 +17,10 @@ namespace ClientLibrary
 		public ChatClient()
 		{
 			connection = new HubConnectionBuilder()
-			.WithJsonProtocol()
-			.WithConsoleLogger()
-			.WithTransport(Microsoft.AspNetCore.Sockets.TransportType.WebSockets)
-			.WithUrl("http://localhost:45604/chat")
+			//.AddJsonProtocol()
+			.AddMessagePackProtocol()
+			.ConfigureLogging(l => l.AddConsole())
+			.WithUrl("http://localhost:45604/chat", Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets)
 			.Build();
 			connection.On<ChatMessage>("send", msg => OnMessageReceived?.Invoke(this, new ChatMessageEventArgs() { Message = msg }));
 		}
